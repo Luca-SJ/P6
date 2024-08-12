@@ -1,14 +1,17 @@
 package com.openclassrooms.mddapi.Services;
+import com.openclassrooms.mddapi.SpringSecurityConfig;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 
 
 @Service
@@ -38,11 +41,19 @@ public class JWTService {
     public boolean validateToken(String token) {
         try {
             Jwt jwt = jwtDecoder.decode(token);
+            Map<String, Object> claims = jwt.getClaims();
+
+            // Récupérer le temps d'expiration
+            Instant expiration = (Instant) claims.get("exp");
+            if (expiration == null || expiration.isBefore(Instant.now())) {
+                return false; // Le token a expiré
+            }
+
             // Vous pouvez ajouter des validations supplémentaires ici si nécessaire
+
             return true; // Le token est valide
         } catch (JwtException e) {
-            // Le token n'est pas valide
-            return false;
+            return false; // Le token n'est pas valide
         }
     }
 
