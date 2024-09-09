@@ -1,10 +1,56 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
+import { HomeComponent } from './components/home/home.component';
+import { RegisterComponent } from './features/auth/components/register/register.component';
+import { LoginComponent } from './features/auth/components/login/login.component';
+import { AuthGuard } from './guards/auth.guard';
+import { UnauthGuard } from './guards/unauth.guard';
+import { MeComponent } from './components/me/me.component';
+import { NewsComponent } from './news/news.component';
+import { ThemesComponent } from './themes/themes.component';
+import { HeaderComponent } from './header/header.component';
+import { CreateNewsComponent } from './create-news/create-news.component';
 
 // consider a guard combined with canLoad / canActivate route option
 // to manage unauthenticated user to access private routes
-const routes: Routes = [{ path: '', component: HomeComponent }];
+const routes: Routes = [
+  { 
+    path: '',
+    canActivate: [UnauthGuard],
+    component: HomeComponent
+  },
+
+  { 
+    path: 'register',
+    component: RegisterComponent
+  },
+
+  { 
+    path: 'login',
+    component: LoginComponent
+  },
+
+  { 
+    path: 'me',
+    component: MeComponent
+  },
+
+  { 
+    path: 'news',
+    component: NewsComponent
+  },
+
+  { 
+    path: 'themes',
+    component: ThemesComponent
+  },
+
+  { 
+    path: 'create-news',
+    component: CreateNewsComponent
+  },
+  
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
