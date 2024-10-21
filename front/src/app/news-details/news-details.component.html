@@ -11,7 +11,7 @@
 
     .news_list {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(1, 1fr);
         gap: 10px;
     }
 
@@ -61,10 +61,15 @@
 <body>
 
     <div class="news_list">
-        <div class="new" *ngFor="let item of data">
-            <span style="font-weight: bold;font-size: 16px;">{{ item.name }}</span>
-            <span style="text-align: justify;overflow: hidden;">{{ item.description }}</span>
-            <button mat-raised-button color="primary" class="w-40 subscribe" (click)="redirectSubscribe()">S'abonner</button>
+        <div class="new">
+            <span style="font-weight: bold;font-size: 16px;">{{ data?.title }}</span>
+            <div
+                style="display: flex;justify-content: space-between;">
+                <span class="italic">Date : {{ data?.created_at }}</span>
+                <span class="italic">Auteur : {{ data?.owner_id }}</span>
+            </div>
+            <span style="text-align: justify;overflow: hidden;">{{ data?.description }}</span>
+
         </div>
 
     </div>

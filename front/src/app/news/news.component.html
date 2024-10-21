@@ -66,19 +66,15 @@
     </div>
 
     <div class="news_list">
-        <div class="new" *ngFor="let number of [0,1,2,3]">
-            <span style="font-weight: bold;font-size: 16px;">Titre de
-                l'article</span>
+        <div class="new" *ngFor="let item of data">
+            <span style="font-weight: bold;font-size: 16px;">{{ item.title }}</span>
             <div
                 style="display: flex;justify-content: space-between;margin-right: 50%;">
-                <span>Date :</span>
-                <span>Auteur :</span>
+                <span>Date : {{ item.created_at }}</span>
+                <span>Auteur : {{ item.owner_id }}</span>
             </div>
-            <span style="text-align: justify;overflow: hidden;">Lorem ipsum dolor sit, amet consectetur adipisicing
-                elit. Sequi ipsam magni ad exercitationem. Maxime molestias
-                optio, atque itaque iste neque quasi aut quidem at
-                exercitationem enim temporibus quo deleniti et.</span>
-            <button mat-raised-button color="primary" class="w-40 subscribe">Consulter l'article</button>
+            <span style="text-align: justify;overflow: hidden;">{{ item.description }}</span>
+            <button mat-raised-button color="primary" class="w-40 subscribe" routerLink="{{ item.id }}">Consulter l'article</button>
 
         </div>
 
@@ -86,5 +82,5 @@
 </body>
 
 <footer>
-    <a href="/">Se deconnecter</a>
+    <a (click)="logout()">Se deconnecter</a>
 </footer>

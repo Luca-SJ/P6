@@ -10,6 +10,7 @@ import { NewsComponent } from './news/news.component';
 import { ThemesComponent } from './themes/themes.component';
 import { HeaderComponent } from './header/header.component';
 import { CreateNewsComponent } from './create-news/create-news.component';
+import { NewsDetailsComponent } from './news-details/news-details.component';
 
 // consider a guard combined with canLoad / canActivate route option
 // to manage unauthenticated user to access private routes
@@ -38,6 +39,11 @@ const routes: Routes = [
   { 
     path: 'news',
     component: NewsComponent
+  },
+
+  { 
+    path: 'news/:id',
+    component: NewsDetailsComponent
   },
 
   { 

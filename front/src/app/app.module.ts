@@ -21,6 +21,7 @@ import { NewsComponent } from './news/news.component';
 import { ThemesComponent } from './themes/themes.component';
 import { HeaderComponent } from './header/header.component';
 import { CreateNewsComponent } from './create-news/create-news.component';
+import { NewsDetailsComponent } from './news-details/news-details.component';
 
 const materialModule = [
   MatButtonModule,
@@ -41,6 +42,7 @@ const materialModule = [
     ThemesComponent,
     HeaderComponent,
     CreateNewsComponent,
+    NewsDetailsComponent,
   ],
   imports: [
     BrowserModule,
