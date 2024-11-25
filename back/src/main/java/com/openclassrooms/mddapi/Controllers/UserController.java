@@ -2,7 +2,7 @@ package com.openclassrooms.mddapi.Controllers;
 
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.User;
-import com.openclassrooms.mddapi.Services.UserService;
+import com.openclassrooms.mddapi.Services.Interfaces.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @CrossOrigin
@@ -21,7 +20,7 @@ import java.util.List;
 public class UserController {
 
     @Autowired
-    private UserService userService;
+    private IUserService userService;
 
     @Operation(summary = "Récupère tous les utilisateurs", description = "Récupère tous les utilisateurs présent dans la BDD")
     @ApiResponses(value = {

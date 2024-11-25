@@ -1,5 +1,6 @@
 export interface Subscribe {
-	idUser: number,
-    idTheme: number,
+	id: number,
 	created_at: Date,
+	topic_id: number,
+	user_id: number
 }

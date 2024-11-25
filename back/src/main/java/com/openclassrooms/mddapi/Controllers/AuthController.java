@@ -1,28 +1,34 @@
 package com.openclassrooms.mddapi.Controllers;
 
 
+import com.openclassrooms.mddapi.Dtos.TokenResponse;
+import com.openclassrooms.mddapi.Dtos.UserDTO;
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.User;
+import com.openclassrooms.mddapi.Services.Interfaces.IJWTService;
+import com.openclassrooms.mddapi.Services.Interfaces.IUserService;
 import com.openclassrooms.mddapi.Services.JWTService;
-import com.openclassrooms.mddapi.Services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.*;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -33,10 +39,12 @@ public class AuthController {
     }
 
     @Autowired
-    private UserService userService;
-    private JWTService jwtService;
+    private IUserService userService;
+    private IJWTService jwtService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
 /*    @PostMapping("/login")
     public String getToken(Authentication authentication) {
@@ -53,7 +61,7 @@ public class AuthController {
     @PostMapping ("/auth/register")
     public ResponseEntity<Map<String, String>> register(@RequestBody User user) {
         Authentication authentication = new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword());
-        String token = jwtService.generateToken(authentication);
+        String token = jwtService.generateToken(user.getEmail());
         SecurityContextHolder.getContext().setAuthentication(authentication);
         Map<String, String> tokenMAP = new HashMap<>();
         tokenMAP.put("token", token);
@@ -69,41 +77,22 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Échec de la connexion")
     })
     @PostMapping ("/auth/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody User user) {
-        String email = user.getEmail();
-        String password = user.getPassword();
+    public TokenResponse login(@RequestBody @Validated UserDTO user) {
 
-        UserDetails userLogin = null;
-        boolean passwordOk = false;
+            User userDetail = (User) userService.loadUserByUsername(user.getNameOrEmail());
+            if (passwordEncoder.matches(user.getPassword(), userDetail.getPassword())) {
 
-
-        try {
-            userLogin = userService.loadUserByUsername(email);
-            passwordOk = passwordEncoder.matches(password, userLogin.getPassword());
+                //Authentication authentication = new UsernamePasswordAuthenticationToken(user.getNameOrEmail(), user.getPassword());
+                String token = jwtService.generateToken(user.getNameOrEmail());
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getNameOrEmail(), user.getPassword()));
+                //SecurityContextHolder.getContext().setAuthentication(authentication);
 
 
-        } catch (Exception e) {
-            e.printStackTrace();
+                    return new TokenResponse(token);
 
-        } finally {
-            try {
-                if (passwordOk) {
-                    Authentication authentication = new UsernamePasswordAuthenticationToken(email, password);
-                    String token = jwtService.generateToken(authentication);
-
-                    SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                    Map<String, String> tokenMAP = new HashMap<>();
-                    tokenMAP.put("token", token);
-                    return ResponseEntity.ok(tokenMAP);
-
-                }
-
-            } catch (Exception e) {
-                e.printStackTrace();
+            } else {
+                throw new UsernameNotFoundException("User not found");
             }
-        }
-        return ResponseEntity.badRequest().build();
     }
 
     @Operation(summary = "Récupère les infos de la personne connectée", description = "Récupère les infos de la personne connectée en fonction de l'ID")
@@ -112,7 +101,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Informations non récupérées")
     })
     @GetMapping ("/auth/me")
-    public ResponseEntity<User> getUserByID() throws ResourceNotFoundException {
+    public ResponseEntity<User> getUserByID(Principal user) throws ResourceNotFoundException {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
 

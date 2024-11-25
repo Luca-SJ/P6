@@ -1,10 +1,13 @@
-package com.openclassrooms.mddapi;
+package com.openclassrooms.mddapi.Configs;
 
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -25,6 +28,7 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 public class SpringSecurityConfig {
 
+    // Doit se trouver dans le fichier application.properties
     private String jwtKey = "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08";
     @Bean
     public JwtDecoder jwtDecoder() {
@@ -33,11 +37,16 @@ public class SpringSecurityConfig {
     }
 
     @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+
+    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/me",
+                .authorizeHttpRequests((auth) -> auth.requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/me", "/api/themes/subscribe/**",
                                 // -- Swagger UI v2
                                 "/v2/api-docs", "/swagger-resources", "/swagger-resources/**", "/configuration/ui",
                                 "/configuration/security", "/swagger-ui.html", "/webjars/**",
@@ -49,14 +58,6 @@ public class SpringSecurityConfig {
     }
 
     @Bean
-    public UserDetailsService users() {
-        UserDetails user = User.builder().username("user").password(passwordEncoder().encode("password")).roles("USER")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-
-    @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -66,5 +67,9 @@ public class SpringSecurityConfig {
         return new NimbusJwtEncoder(new ImmutableSecret<>(this.jwtKey.getBytes()));
     }
 
-
+    @Bean
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
 }

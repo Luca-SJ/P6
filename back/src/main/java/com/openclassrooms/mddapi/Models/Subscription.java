@@ -2,44 +2,46 @@ package com.openclassrooms.mddapi.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
 
 @Data
 @Entity
-@Table(name = "subscription")
+@Table(name = "subscription", uniqueConstraints = { @UniqueConstraint(columnNames = {"user_id", "topic_id"}) })
 public class Subscription {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long idUser;
-    private long idTheme;
+    private Long id;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    @ManyToOne
+    @JoinColumn(name = "topic_id", nullable = false)
+    private Topic topic;
     private Date created_at;
 
-    public Subscription() {}
+    public Subscription() { }
 
-    public Subscription(long IdUser, long IdTheme) {
-        this.idUser = IdUser;
-        this.idTheme = IdTheme;
-    }
-
-    public long getIdUser() {
-        return idUser;
-    }
-    public void setIdUser(long idUser) {
-        this.idUser = idUser;
+    public User getUser() {
+        return user;
     }
 
-    public long getIdTheme() {
-        return idTheme;
+    public void setUser(User user) {
+        this.user = user;
     }
-    public void setIdTheme(long idTheme) {
-        this.idTheme = idTheme;
+
+    public Topic getTopic() {
+        return topic;
+    }
+
+    public void setTopic(Topic topic) {
+        this.topic = topic;
     }
 
     public Date getCreated_at() {
         return created_at;
     }
-    public void setCreated_at(Date newCreated_at) {
-        this.created_at = newCreated_at;
+
+    public void setCreated_at(Date created_at) {
+        this.created_at = created_at;
     }
 }

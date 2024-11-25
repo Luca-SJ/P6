@@ -1,22 +1,98 @@
+<style>
+    body {
+        padding: 20px 40px 0 40px;
+    }
+
+    .createAndFilter {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .news_list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .new {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 200px;
+        border-radius: 5px;
+        padding: 20px;
+        background: rgb(245, 245, 245);
+        overflow: hidden;
+    }
+
+    footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        border-top: 1px solid lightgray;
+    }
+
+    footer a {
+        font-size: 18px;
+        font-weight: bold;
+        color: rgb(192, 50, 50);
+    }
+
+    footer a:hover {
+        color: rgb(255, 0, 0);
+    }
+
+    @media only screen and (max-width: 600px) {
+        .news_list {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .subscribe {
+            width: 100%;
+        }
+}
+        
+</style>
+
 <div class="me">
     <mat-card class="">
         <mat-card-title>
 
-            <div fxLayout="row" fxLayoutAlign="start center">
+            <div style="display: flex;align-items: center;">
                 <button mat-icon-button (click)="back()">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
-                <h1>User information</h1>
+                <h1 style="margin: 0;">Informations utilisateur</h1>
             </div>
             
         </mat-card-title>
-        <mat-card-content>
-            <div *ngIf="user" fxLayout="column" fxLayoutAlign="start center">
-                <p>Name: {{ user.name }}</p>
-                <p>Email: {{ user.email }}</p>
-                <p><i>Create at: </i> {{ user.created_at| date: 'longDate'}}</p>
-                <p><i>Last update: </i> {{ user.updated_at| date: 'longDate'}}</p>
+        <mat-card-content style="width: 400px;margin: auto;">
+            <div *ngIf="user">
+                <div>
+                    <span>Name: {{ user.name }} | </span>
+                    <button mat-icon-button>Changer le pseudo</button>
+                </div>
+                
+                <div>
+                    <span>Email: {{ user.email }} | </span>
+                    <button mat-icon-button>Changer l'adresse email</button>
+                </div>
+                <br>
+                <div>
+                    <p><i>Membre depuis : </i> {{ user.created_at| date: 'longDate'}}</p>
+                    <p><i>Dernière modification: </i> {{ user.updated_at| date: 'longDate'}}</p>
+                </div>
             </div>
         </mat-card-content>
     </mat-card>
+    <div class="news_list">
+        <div class="new" *ngFor="let item of data">
+            <span style="font-weight: bold;font-size: 16px;">{{ item.name }}</span>
+            <span style="text-align: justify;overflow: hidden;">{{ item.description }}</span>
+            <button mat-raised-button color="primary" class="w-40 subscribe" (click)="redirectUnsubscribe(item.id)">Se désabonner</button>
+        </div>
+
+    </div>
 </div>

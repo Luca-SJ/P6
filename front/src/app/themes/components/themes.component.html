@@ -64,7 +64,7 @@
         <div class="new" *ngFor="let item of data">
             <span style="font-weight: bold;font-size: 16px;">{{ item.name }}</span>
             <span style="text-align: justify;overflow: hidden;">{{ item.description }}</span>
-            <button mat-raised-button color="primary" class="w-40 subscribe" (click)="redirectSubscribe()">S'abonner</button>
+            <button mat-raised-button color="primary" class="w-40 subscribe" (click)="redirectSubscribe(item.id)">S'abonner</button>
         </div>
 
     </div>

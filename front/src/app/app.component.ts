@@ -18,11 +18,7 @@ export class AppComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.autoLog();
-  }
-
-  public $isLogged(): Observable<boolean> {
-    return this.sessionService.$isLogged();
+    // this.autoLog();
   }
 
   public logout(): void {
@@ -33,7 +29,7 @@ export class AppComponent implements OnInit {
   public autoLog(): void {
     this.authService.me().subscribe(
       (user: User) => {
-        this.sessionService.logIn(user);
+        this.sessionService.logIn(user, "");
       },
       (_) => {
         this.sessionService.logOut();

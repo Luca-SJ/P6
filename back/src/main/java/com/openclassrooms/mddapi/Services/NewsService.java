@@ -2,18 +2,38 @@ package com.openclassrooms.mddapi.Services;
 
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.News;
-import com.openclassrooms.mddapi.Models.User;
-import com.openclassrooms.mddapi.Repository.NewsRepo;
+import com.openclassrooms.mddapi.Models.Subscription;
+import com.openclassrooms.mddapi.Models.Topic;
+import com.openclassrooms.mddapi.Repository.NewsRepository;
+import com.openclassrooms.mddapi.Repository.SubscriptionRepository;
+import com.openclassrooms.mddapi.Services.Interfaces.INewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class NewsService {
+public class NewsService implements INewsService {
 
     @Autowired
-    private NewsRepo newsRepository;
+    private NewsRepository newsRepository;
+
+    @Autowired
+    private SubscriptionRepository subscriptionRepository;
+
+//    public List<News> getNewsList(Date created_at, String size, String title, long owner_id, String picture, Date updated_at) {
+//
+//        PageRequest pageReq = PageRequest.of(created_at, size, Sort.Direction.fromString(sortDir), sort);
+//
+//        Page<News> news = newsRepository.findByUser(userService.getCurrentUser(), pageReq);
+//        return news.getContent();
+//    }
+//
+//    public News getNewsById(Long NewsID) {
+//        return newsRepository.findById(NewsID);
+//    }
 
     public List<News> findAll() {
         return newsRepository.findAll();
@@ -49,6 +69,17 @@ public class NewsService {
         return newsRepository.save(news);
     }
 
+    public News updateNews(News news) {
+        news.setTitle(news.getTitle());
+        news.setDescription(news.getDescription());
+        news.setPicture(news.getPicture());
+        news.setOwner_id(news.getOwner_id());
+        news.setCreated_at(news.getCreated_at());
+        news.setUpdated_at(news.getUpdated_at());
+
+        return newsRepository.save(news);
+    }
+
     public News createNews(News news) {
         java.util.Date utilDate = new java.util.Date();
         java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
@@ -60,5 +91,22 @@ public class NewsService {
         news.setPicture(news.getPicture());
 
         return newsRepository.save(news);
+    }
+
+    @Override
+    public List<News> getNewsByUserId(Long id) {
+        List<News> news = new ArrayList<>(); ;
+        List<Subscription> subscriptions = this.subscriptionRepository.findByUserId(id);
+        List<Topic> topic = subscriptions.stream().map(Subscription::getTopic).collect(Collectors.toList());
+
+        for (Topic unTopic : topic) {
+            List<News> newsList = this.newsRepository.findByTopicId(unTopic.getId());
+
+            for (News uneNews : newsList) {
+                news.add(uneNews);
+            }
+        }
+
+        return news;
     }
 }

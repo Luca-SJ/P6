@@ -5,7 +5,6 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +16,7 @@ import java.util.List;
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private String email;
     private String password;
@@ -33,10 +32,8 @@ public class User implements UserDetails {
 
     }
 
-    public long getId() {
-        return id;
-    }
-    public void setId(long id) {
+    public Long getId() { return id; }
+    public void setId(Long id) {
         this.id = id;
     }
     public String getName() {
@@ -101,6 +98,5 @@ public class User implements UserDetails {
     public void setUpdated_at(Date newUpdated_at) {
         this.updated_at = newUpdated_at;
     }
-
 
 }

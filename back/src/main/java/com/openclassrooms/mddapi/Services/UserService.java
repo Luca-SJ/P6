@@ -2,28 +2,20 @@ package com.openclassrooms.mddapi.Services;
 
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.User;
-import com.openclassrooms.mddapi.Repository.UserRepo;
+import com.openclassrooms.mddapi.Repository.UserRepository;
+import com.openclassrooms.mddapi.Services.Interfaces.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class UserService implements UserDetailsService {
+public class UserService implements IUserService {
 
     @Autowired
-    private UserRepo userRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -37,9 +29,9 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : " + UserID + " inexistant"));
     }
 
-    public User findByEmail(String UserEmail) throws ResourceNotFoundException {
-        return userRepository.findByEmail(UserEmail)
-                .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : " + UserEmail + " inexistant"));
+    public User findByEmail(String email) throws ResourceNotFoundException {
+        return userRepository.findByEmailOrName(email, email)
+                .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : " + email + " inexistant"));
     }
 
     public void deleteByID(Long UserID) throws ResourceNotFoundException {
@@ -72,10 +64,11 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<User> user = userRepository.findByEmail(email);
+    public User loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findByEmailOrName(email, email).orElseThrow((() ->
+                new UsernameNotFoundException("Valeur manquante dans l'Optional")
+        ));
 
-        return new User(user.get().getEmail(), user.get().getPassword());
     }
 
 }

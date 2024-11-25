@@ -2,34 +2,31 @@ package com.openclassrooms.mddapi.Models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+
 @Data
 @Entity
-@Table(name = "theme")
-public class Theme {
+@Table(name = "topic")
+public class Topic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
     private String name;
     private String description;
     private Date created_at;
     private Date updated_at;
 
-    public Theme() {}
+    public Topic() {}
 
-    public Theme(String name, String description) {
+    public Topic(String name, String description) {
         this.name = name;
         this.description = description;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
     public String getName() {

@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/features/auth/services/auth.service';
 import { NewsService } from '../news.service';
 import { SessionService } from '../services/session.service';
+import { User } from '../interfaces/user.interface';
 
 @Component({
   selector: 'app-news',
@@ -9,11 +11,17 @@ import { SessionService } from '../services/session.service';
 })
 export class NewsComponent implements OnInit {
   data: any;
+  public user: User | undefined;
 
-  constructor(private NewsService: NewsService, private sessionService: SessionService) { }
+  constructor(private authService: AuthService, private NewsService: NewsService, private sessionService: SessionService) { }
 
   ngOnInit(): void {
-    this.getDataFromApi();
+    this.authService.me().subscribe(
+      (user: User) => { 
+        this.user = user;
+        this.getDataFromApi();
+      }
+    );
   }
 
   logout() {;
@@ -26,13 +34,13 @@ export class NewsComponent implements OnInit {
   }
   
   getDataFromApi(): void {
-    this.NewsService.getNews().subscribe(
+    this.NewsService.getNewByUserId(this.user!.id).subscribe(
       (response) => {
         this.data = response;
         // console.log(this.data);
       },
       (error) => {
-        console.error('Erreur lors de la récupération des données', error);
+        console.error('Erreur lors de la rï¿½cupï¿½ration des donnï¿½es', error);
       }
     );
   }

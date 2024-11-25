@@ -6,6 +6,7 @@ import { SessionService } from 'src/app/services/session.service';
 import { AuthSuccess } from '../../interfaces/authSuccess.interface';
 import { LoginRequest } from '../../interfaces/loginRequest.interface'; 
 import { AuthService } from '../../services/auth.service';
+import { concatMap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -17,7 +18,7 @@ export class LoginComponent  {
   public onError = false;
 
   public form = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    nameOrEmail: ['', [Validators.required, Validators.min(1)]],
     password: ['', [Validators.required, Validators.min(3)]]
   });
 
@@ -26,18 +27,36 @@ export class LoginComponent  {
     private router: Router,
     private sessionService: SessionService) { }
 
+  public submitS(): void {
+    const loginRequest = this.form.value as LoginRequest;
+    this.authService.login(loginRequest).subscribe({
+      next:(response: AuthSuccess) => {
+        this.router.navigate(['/news'])
+        // this.authService.me().subscribe((user: User) => {
+        //   this.sessionService.logIn(user, response.token);
+        // });
+        
+      },
+      error:() => {
+        this.onError = true;
+      }
+    })
+  }
+
   public submit(): void {
     const loginRequest = this.form.value as LoginRequest;
-    this.authService.login(loginRequest).subscribe(
-      (response: AuthSuccess) => {
-        localStorage.setItem('token', response.token);
-        this.authService.me().subscribe((user: User) => {
-          this.sessionService.logIn(user);
-          this.router.navigate(['/news'])
-        });
-        this.router.navigate(['/'])
+    this.authService.login(loginRequest).pipe(concatMap((response: AuthSuccess) => {
+      console.log('Login successful:', response);
+      return this.authService.me(); // Appel du second service
+    })
+    )
+    .subscribe({
+      next: (userDetails) => {
+        console.log('User details:', userDetails);
       },
-      error => this.onError = true
-    );
+      error: (err) => {
+        console.error('Error occurred:', err);
+      },
+    });
   }
 }

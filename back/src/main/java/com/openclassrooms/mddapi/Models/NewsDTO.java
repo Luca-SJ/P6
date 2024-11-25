@@ -1,15 +1,9 @@
 package com.openclassrooms.mddapi.Models;
 
-import jakarta.persistence.*;
-import lombok.Data;
 import java.sql.Date;
 
-@Data
-@Entity
-@Table(name = "news", uniqueConstraints = { @UniqueConstraint(columnNames = {"topic_id"}) })
-public class News {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+public class NewsDTO {
+
     private long id;
     private Date created_at;
     private String description;
@@ -17,13 +11,10 @@ public class News {
     private long owner_id;
     private String picture;
     private Date updated_at;
-    @ManyToOne
-    @JoinColumn(name = "topic_id", nullable = false)
-    private Topic topic;
 
-    public News() {}
+    public NewsDTO() {}
 
-    public News(String description, String title, long owner_id) {
+    public NewsDTO(String description, String title, long owner_id) {
         this.description = description;
         this.title = title;
         this.owner_id = owner_id;
@@ -70,11 +61,5 @@ public class News {
     }
     public void setUpdated_at(Date newUpdated_at) {
         this.updated_at = newUpdated_at;
-    }
-    public Topic getTopic() {
-        return topic;
-    }
-    public void setTopic(Topic topic) {
-        this.topic = topic;
     }
 }

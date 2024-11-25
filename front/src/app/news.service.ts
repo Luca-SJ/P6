@@ -20,4 +20,8 @@ export class NewsService {
     return this.httpClient.get<News>(`${this.pathService}/${id}`);
   }
 
+  public getNewByUserId(id: number): Observable<News> {
+    return this.httpClient.get<News>(`${this.pathService}/user/${id}`);
+  }
+
 }

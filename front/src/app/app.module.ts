@@ -18,7 +18,7 @@ import { LoginComponent } from './features/auth/components/login/login.component
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NewsComponent } from './news/news.component';
-import { ThemesComponent } from './themes/themes.component';
+import { ThemesComponent } from './themes/components/themes.component';
 import { HeaderComponent } from './header/header.component';
 import { CreateNewsComponent } from './create-news/create-news.component';
 import { NewsDetailsComponent } from './news-details/news-details.component';

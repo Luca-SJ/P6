@@ -1,12 +1,10 @@
 package com.openclassrooms.mddapi.Services;
-import com.openclassrooms.mddapi.SpringSecurityConfig;
 
+import com.openclassrooms.mddapi.Services.Interfaces.IJWTService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
@@ -15,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class JWTService {
+public class JWTService implements IJWTService {
 
     private JwtEncoder jwtEncoder;
     private JwtDecoder jwtDecoder;
@@ -25,13 +23,13 @@ public class JWTService {
         this.jwtDecoder = jwtDecoder;
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(String name) {
         Instant now = Instant.now();
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.DAYS))
-                .subject(authentication.getName())
+                .subject(name)
                 .build();
         JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims);
         return this.jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
