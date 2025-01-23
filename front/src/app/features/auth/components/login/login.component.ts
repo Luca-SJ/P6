@@ -6,7 +6,7 @@ import { SessionService } from 'src/app/services/session.service';
 import { AuthSuccess } from '../../interfaces/authSuccess.interface';
 import { LoginRequest } from '../../interfaces/loginRequest.interface'; 
 import { AuthService } from '../../services/auth.service';
-import { concatMap } from 'rxjs';
+import { catchError, concatMap, EMPTY, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -27,36 +27,27 @@ export class LoginComponent  {
     private router: Router,
     private sessionService: SessionService) { }
 
-  public submitS(): void {
-    const loginRequest = this.form.value as LoginRequest;
-    this.authService.login(loginRequest).subscribe({
-      next:(response: AuthSuccess) => {
-        this.router.navigate(['/news'])
-        // this.authService.me().subscribe((user: User) => {
-        //   this.sessionService.logIn(user, response.token);
-        // });
-        
-      },
-      error:() => {
-        this.onError = true;
-      }
-    })
-  }
-
   public submit(): void {
     const loginRequest = this.form.value as LoginRequest;
-    this.authService.login(loginRequest).pipe(concatMap((response: AuthSuccess) => {
-      console.log('Login successful:', response);
-      return this.authService.me(); // Appel du second service
-    })
-    )
-    .subscribe({
-      next: (userDetails) => {
-        console.log('User details:', userDetails);
-      },
-      error: (err) => {
-        console.error('Error occurred:', err);
-      },
-    });
+    this.authService.login(loginRequest).pipe(
+      tap((response: AuthSuccess) =>{ 
+        this.sessionService.token = response.token;
+        this.router.navigate(['/articles']);
+        }),
+    switchMap((response: AuthSuccess) => 
+        this.authService.me().pipe(
+          tap((user: User) =>{  
+            this.sessionService.user = user; 
+            this.sessionService.logIn(user, response.token)
+          })
+        )
+      ),
+      catchError(() => {
+        this.onError = true;
+        return EMPTY;
+      })
+    ).subscribe();  
   }
+
+
 }

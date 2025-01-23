@@ -16,7 +16,7 @@ const materialModules = [
   MatCardModule,
   MatFormFieldModule,
   MatIconModule,
-  MatInputModule
+  MatInputModule,
 ]
 
 @NgModule({

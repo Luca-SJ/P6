@@ -1,6 +1,10 @@
 package com.openclassrooms.mddapi.Services;
 
+import com.openclassrooms.mddapi.Dtos.TopicDTO;
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
+import com.openclassrooms.mddapi.Mappers.ArticleMapper;
+import com.openclassrooms.mddapi.Mappers.TopicMapper;
+import com.openclassrooms.mddapi.Models.Article;
 import com.openclassrooms.mddapi.Models.Subscription;
 import com.openclassrooms.mddapi.Models.Topic;
 import com.openclassrooms.mddapi.Models.User;
@@ -22,21 +26,30 @@ public class TopicService implements ITopicService {
     @Autowired
     private SubscriptionRepository subscriptionRepository;
 
+    @Autowired
+    private TopicMapper topicMapper;
+
     @Override
-    public List<Topic> findAll() {
-        return topicRepository.findAll();
+    public List<TopicDTO> findAll() {
+        List<Topic> listTopics = topicRepository.findAll();
+
+        return this.topicMapper.toListTopicDTO(listTopics);
     }
 
     @Override
-    public Topic findByID(Long ThemeID) throws ResourceNotFoundException {
-        return topicRepository.findById(ThemeID)
+    public TopicDTO findByID(Long topicID) throws ResourceNotFoundException {
+        Topic topic = topicRepository.findById(topicID)
                 .orElseThrow(()->new ResourceNotFoundException("Theme inexistant"));
+
+        return this.topicMapper.toTopicDTO(topic);
     }
 
     @Override
-    public Topic findByName(String name) throws ResourceNotFoundException {
-        return topicRepository.findByName(name)
+    public TopicDTO findByName(String name) throws ResourceNotFoundException {
+        Topic topic = topicRepository.findByName(name)
                 .orElseThrow(()->new ResourceNotFoundException("Theme inexistant"));
+
+        return this.topicMapper.toTopicDTO(topic);
     }
 
     @Override
@@ -46,36 +59,26 @@ public class TopicService implements ITopicService {
     }
 
     @Override
-    public Topic updateThemeByID(Long ThemeID, Topic themeDetails) throws ResourceNotFoundException {
-        Topic theme = topicRepository.findById(ThemeID)
-                .orElseThrow(()->new ResourceNotFoundException("Theme avec ID : "+ ThemeID + " inexistant"));
+    public TopicDTO updateThemeByID(Long topicID, Topic themeDetails) throws ResourceNotFoundException {
+        Topic topic = topicRepository.findById(topicID)
+                .orElseThrow(()->new ResourceNotFoundException("Theme avec ID : "+ topicID + " inexistant"));
 
-        theme.setName(themeDetails.getName());
-        theme.setDescription(themeDetails.getDescription());
-        theme.setCreated_at(themeDetails.getCreated_at());
-        theme.setUpdated_at(themeDetails.getUpdated_at());
+        topic.setName(themeDetails.getName());
+        topic.setDescription(themeDetails.getDescription());
 
-        return topicRepository.save(theme);
+        return this.topicMapper.toTopicDTO(topic);
     }
 
-    @Override
-    public Topic createTheme(Topic theme) {
-        java.util.Date utilDate = new java.util.Date();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+    @Transactional
+    public void createTheme(TopicDTO topicDTO) {
+        Topic topic = topicMapper.toTopic(topicDTO);
 
-        theme.setCreated_at(sqlDate);
-        theme.setDescription(theme.getDescription());
-        theme.setName(theme.getName());
-
-        return topicRepository.save(theme);
+        this.topicRepository.save(topic);
     }
 
     @Override
     @Transactional
     public Subscription subscribe(long userId, long topicId) {
-        java.util.Date utilDate = new java.util.Date();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-
         Subscription subscription = new Subscription();
 
         User user = new User();
@@ -86,8 +89,6 @@ public class TopicService implements ITopicService {
 
         subscription.setUser(user);
         subscription.setTopic(topic);
-        subscription.setCreated_at(sqlDate);
-
 
         return subscriptionRepository.save(subscription);
     }
@@ -98,8 +99,9 @@ public class TopicService implements ITopicService {
     }
 
     @Override
-    public List<Topic> getTopicsByUserId(Long id) {
+    public List<TopicDTO> getTopicsByUserId(Long id) {
         List<Subscription> subscriptions = this.subscriptionRepository.findByUserId(id);
-        return subscriptions.stream().map(Subscription::getTopic).collect(Collectors.toList());
+
+        return topicMapper.toListTopicDTO(subscriptions.stream().map(Subscription::getTopic).collect(Collectors.toList()));
     }
 }

@@ -1,21 +1,23 @@
 package com.openclassrooms.mddapi.Services.Interfaces;
 
+import com.openclassrooms.mddapi.Dtos.LoginDTO;
+import com.openclassrooms.mddapi.Dtos.MessageDTO;
+import com.openclassrooms.mddapi.Dtos.RegisterDTO;
+import com.openclassrooms.mddapi.Dtos.UserDTO;
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import java.util.List;
 
-public interface IUserService extends UserDetailsService {
-    List<User> findAll();
+public interface IUserService {
 
-    User findByID(Long UserID) throws ResourceNotFoundException;
+    boolean authenticate(LoginDTO user);
 
-    User findByEmail(String UserEmail) throws ResourceNotFoundException;
+    UserDTO findByEmailOrName(String emailOrName) throws ResourceNotFoundException;
 
-    void deleteByID(Long UserID) throws ResourceNotFoundException;
+    UserDTO findById(long id) throws ResourceNotFoundException;
+    void createUser(RegisterDTO user);
 
-    User updateUserByID(Long UserID, User userDetails) throws ResourceNotFoundException;
-
-    User createUser(User user);
+    MessageDTO updateUser(UserDTO userUpdated, String usernameFromJWT) throws ResourceNotFoundException;
 
 }

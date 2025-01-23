@@ -9,7 +9,7 @@
         margin-bottom: 10px;
     }
 
-    .news_list {
+    .articles_list {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 10px;
@@ -19,7 +19,7 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        height: 200px;
+        height: 160px;
         border-radius: 5px;
         padding: 20px;
         background: rgb(245, 245, 245);
@@ -44,8 +44,16 @@
         color: rgb(255, 0, 0);
     }
 
+    input[type=text] {
+        border: 1px solid black;
+        border-radius: 3px;
+        padding: 5px 10px;
+        /* margin-right: 5px; */
+        width: 100%;
+    }
+
     @media only screen and (max-width: 600px) {
-        .news_list {
+        .articles_list {
             grid-template-columns: repeat(1, 1fr);
         }
 
@@ -56,42 +64,78 @@
         
 </style>
 
-<div class="me">
+<app-header></app-header>
+<div class="me h-full">
     <mat-card class="">
         <mat-card-title>
 
-            <div style="display: flex;align-items: center;">
-                <button mat-icon-button (click)="back()">
+            <div style="display: flex;align-items: center;margin-bottom: 10px;justify-content: center;">
+                <!-- <button mat-icon-button (click)="back()">
                     <mat-icon>arrow_back</mat-icon>
-                </button>
-                <h1 style="margin: 0;">Informations utilisateur</h1>
+                </button> -->
+                <h1 style="margin: 0;font-weight: bold;" class="text-2xl">Profil utilisateur</h1>
             </div>
             
         </mat-card-title>
         <mat-card-content style="width: 400px;margin: auto;">
-            <div *ngIf="user">
+            <form action="" [formGroup]="form">
                 <div>
-                    <span>Name: {{ user.name }} | </span>
-                    <button mat-icon-button>Changer le pseudo</button>
+                    <div>
+                        <span style="display: flex;font-weight: bold;text-decoration: underline;margin-bottom: 5px;">Pseudo : </span>
+                        <div style="display: flex;justify-content: space-between;align-items: center;">
+                            <input formControlName="name" id="changePseudo" type="text" value="{{ user?.name }}">
+                            <!-- <button style="width: 100%;text-align: right;">Changer le pseudo</button> -->
+                        </div>
+                        
+                    </div>
+
+                    <div style="width: 100%;height: 1px;background: black;margin: 10px 0;"></div>
+
+                    <div>
+                        <span style="display: flex;font-weight: bold;text-decoration: underline;margin-bottom: 5px;">Email: </span>
+                        <div style="display: flex;justify-content: space-between;align-items: center;">
+                            <input formControlName="email" type="text" value="{{ user?.email }}">
+                            <!-- <button style="width: 100%;text-align: right;">Changer l'adresse email</button> -->
+                        </div>
+                    </div>
+
+                    <div style="width: 100%;height: 1px;background: black;margin: 10px 0;"></div>
+
+                    <div>
+                        <span style="display: flex;font-weight: bold;text-decoration: underline;margin-bottom: 5px;">Mot de passe: </span>
+                        <div style="display: flex;justify-content: space-between;align-items: center;">
+                            <input formControlName="password" type="text" value="" placeholder="********">
+                            <!-- <button style="width: 100%;text-align: right;">Changer le mot de passe</button> -->
+                        </div>
+                    </div>
+                    
+                    <div style="width: 100%;height: 1px;background: black;margin: 10px 0;"></div>
+                    
+                    <button style="width: 100%;background: #673ab7;padding: 8px 16px;border-radius: 5px;color: #fff;margin-bottom: 20px;" (click)="updateUserInfos()">Sauvegarder</button>
+                    <div class="w-full text-center text-red-600 font-bold">
+                        <a (click)="logout()">Se deconnecter</a>
+                    </div>
+                    
+
+                    <!-- <div>
+                        <p><i>Membre depuis : </i> {{ user?.created_at| date: 'longDate'}}</p>
+                        <p><i>Dernière modification: </i> {{ user?.updated_at| date: 'longDate'}}</p>
+                    </div> -->
                 </div>
-                
-                <div>
-                    <span>Email: {{ user.email }} | </span>
-                    <button mat-icon-button>Changer l'adresse email</button>
-                </div>
-                <br>
-                <div>
-                    <p><i>Membre depuis : </i> {{ user.created_at| date: 'longDate'}}</p>
-                    <p><i>Dernière modification: </i> {{ user.updated_at| date: 'longDate'}}</p>
-                </div>
-            </div>
+            </form>
         </mat-card-content>
     </mat-card>
-    <div class="news_list">
+    <div class="flex w-full justify-center pt-3">
+        <span class="font-bold text-2xl">Abonnements</span>
+    </div>
+    <div class="articles_list p-3">
         <div class="new" *ngFor="let item of data">
             <span style="font-weight: bold;font-size: 16px;">{{ item.name }}</span>
-            <span style="text-align: justify;overflow: hidden;">{{ item.description }}</span>
-            <button mat-raised-button color="primary" class="w-40 subscribe" (click)="redirectUnsubscribe(item.id)">Se désabonner</button>
+            <span style="text-align: justify;overflow: hidden;display: flex;flex-grow: 1;">{{ item.description }}</span>
+            <div class="flex w-full justify-center">
+                <button mat-raised-button color="primary" class="w-40 subscribe" (click)="redirectUnsubscribe(item.id)">Se désabonner</button>
+            </div>
+            
         </div>
 
     </div>

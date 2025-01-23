@@ -8,11 +8,25 @@ import { User } from '../interfaces/user.interface';
 })
 export class SessionService {
 
-  public user: User | undefined;
+  private _user: User | undefined;
 
   public isLogged(): Boolean {
     return localStorage.getItem("token")?true:false;
   }
+
+  set user(user:User|undefined){
+       this._user = user;
+  }
+
+  get user():User|undefined{
+       return this._user;
+  }
+
+  set token(token:string|null){
+    if (token) {
+      localStorage.setItem('token', token);
+    }
+   }
 
   public logIn(user: User, token: string): void {
     this.user = user;
@@ -24,6 +38,6 @@ export class SessionService {
 
   public logOut(): void {
     localStorage.removeItem('token');
-    this.user = undefined;
+    this._user = undefined;
   }
 }

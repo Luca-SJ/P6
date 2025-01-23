@@ -1,74 +1,80 @@
 package com.openclassrooms.mddapi.Services;
 
+import com.openclassrooms.mddapi.Dtos.LoginDTO;
+import com.openclassrooms.mddapi.Dtos.MessageDTO;
+import com.openclassrooms.mddapi.Dtos.RegisterDTO;
+import com.openclassrooms.mddapi.Dtos.UserDTO;
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
+import com.openclassrooms.mddapi.Mappers.UserMapper;
 import com.openclassrooms.mddapi.Models.User;
 import com.openclassrooms.mddapi.Repository.UserRepository;
 import com.openclassrooms.mddapi.Services.Interfaces.IUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@AllArgsConstructor
 public class UserService implements IUserService {
 
-    @Autowired
     private UserRepository userRepository;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    private UserMapper userMapper;
+
+    public UserDTO findByEmailOrName(String email) throws ResourceNotFoundException {
+
+        final User user = userRepository.findByEmailOrName(email, email)
+                .orElseThrow(()-> new ResourceNotFoundException("utilisateur avec ID : " + email + " inexistant"));
+
+        return this.userMapper.toUserDTO(user);
     }
 
-    public User findByID(Long UserID) throws ResourceNotFoundException {
-        return userRepository.findById(UserID)
-                .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : " + UserID + " inexistant"));
+    public UserDTO findById(long id) throws ResourceNotFoundException {
+
+        final User user = userRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("utilisateur avec ID : " + id + " inexistant"));
+
+        return this.userMapper.toUserDTO(user);
     }
 
-    public User findByEmail(String email) throws ResourceNotFoundException {
-        return userRepository.findByEmailOrName(email, email)
-                .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : " + email + " inexistant"));
-    }
 
-    public void deleteByID(Long UserID) throws ResourceNotFoundException {
-        User user = userRepository.findById(UserID)
-                .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : " + UserID + " inexistant"));
-        userRepository.delete(user);
-    }
-
-    public User updateUserByID(Long UserID, User userDetails) throws ResourceNotFoundException {
-        User user = userRepository.findById(UserID)
-                .orElseThrow(()->new ResourceNotFoundException("utilisateur avec ID : "+ UserID + " inexistant"));
-
-        user.setName(userDetails.getName());
-        user.setCreated_at(userDetails.getCreated_at());
-        user.setUpdated_at(userDetails.getUpdated_at());
-
-        return userRepository.save(user);
-    }
-
-    public User createUser(User user) {
-        String pw = passwordEncoder.encode(user.getPassword());
-
-        user.setPassword(pw);
-
-        java.util.Date utilDate = new java.util.Date();
-        java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-
-        user.setCreated_at(sqlDate);
-        return userRepository.save(user);
+    public void createUser(RegisterDTO userDTO) {
+        final User user = this.userMapper.toUser(userDTO);
+        final String password = passwordEncoder.encode(userDTO.getPassword());
+        user.setPassword(password);
+        userRepository.save(user);
     }
 
     @Override
-    public User loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmailOrName(email, email).orElseThrow((() ->
-                new UsernameNotFoundException("Valeur manquante dans l'Optional")
-        ));
-
+    public boolean authenticate(LoginDTO userDTO) throws UsernameNotFoundException {
+        return userRepository.findByEmailOrName(userDTO.getNameOrEmail(), userDTO.getNameOrEmail())
+                .map(user -> passwordEncoder.matches(userDTO.getPassword(), user.getPassword())) // Comparer les mots de passe
+                .orElse(false);
     }
 
+    @Override
+    @Transactional
+    public MessageDTO updateUser(UserDTO userUpdated, String usernameFromJWT) throws ResourceNotFoundException {
+        User user = userRepository.findByEmailOrName(usernameFromJWT, usernameFromJWT).orElse(null);
+        if (user != null) {
+            if (userUpdated.getName() != null) {
+                user.setName(userUpdated.getName());
+            }
+            if (userUpdated.getEmail() != null) {
+                user.setEmail(userUpdated.getEmail());
+            }
+            if (userUpdated.getPassword() != null) {
+                final String password = passwordEncoder.encode(userUpdated.getPassword());
+                user.setPassword(password);
+            }
+
+            userRepository.save(user);
+            return new MessageDTO("Mise à jour effectuée");
+        }
+        throw new ResourceNotFoundException("Not found");
+    }
 }

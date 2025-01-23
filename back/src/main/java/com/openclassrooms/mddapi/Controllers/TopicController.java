@@ -1,40 +1,44 @@
 package com.openclassrooms.mddapi.Controllers;
 
+import com.openclassrooms.mddapi.Dtos.TopicDTO;
+import com.openclassrooms.mddapi.Dtos.UserDTO;
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.Subscription;
-import com.openclassrooms.mddapi.Models.Topic;
-import com.openclassrooms.mddapi.Models.User;
 import com.openclassrooms.mddapi.Services.Interfaces.ITopicService;
 import com.openclassrooms.mddapi.Services.Interfaces.IUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import java.security.Principal;
 import java.util.List;
 
-@CrossOrigin
+@CrossOrigin("*")
 @RestController
 @RequestMapping("/api/topics")
 @Tag(name = "Theme Controller")
+@SecurityRequirement(name = "bearerAuth")
+
 public class TopicController {
+    private final ITopicService topicService;
 
-    @Autowired
-    private ITopicService topicService;
-    @Autowired
-    private IUserService userService;
+    private final IUserService userService;
 
-    @Operation(summary = "Récupère tous les articles", description = "Récupère tous les articles présent dans la BDD")
+    public TopicController(ITopicService topicService, IUserService userService) {
+        this.topicService = topicService;
+        this.userService = userService;
+    }
+
+    @Operation(summary = "Récupère tous les topics", description = "Récupère tous les articles présent dans la BDD")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Article(s) trouvé(e)s"),
             @ApiResponse(responseCode = "404", description = "Article(s) inconnu(s)")
     })
     @GetMapping()
-    public List<Topic> getAllTheme() {
+    public List<TopicDTO> getAllTopic() {
         return topicService.findAll();
     }
 
@@ -44,20 +48,24 @@ public class TopicController {
             @ApiResponse(responseCode = "404", description = "Article(s) inconnu(s)")
     })
     @GetMapping("/user/{id}")
-    public List<Topic> getTopicSubscribe(@PathVariable(value = "id") Long id, Principal principal) {
+    public List<TopicDTO> getTopicSubscribe(@PathVariable(value = "id") Long id, Principal principal) {
         return topicService.getTopicsByUserId(id);
     }
 
-    @Operation(summary = "Récupère tous les articles", description = "Récupère tous les articles présent dans la BDD")
+    @Operation(
+            summary = "Subscribe to a theme",
+            description = "Allows the authenticated user to subscribe to a theme by providing its ID."
+    )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Article(s) trouvé(e)s"),
-            @ApiResponse(responseCode = "404", description = "Article(s) inconnu(s)")
+            @ApiResponse(responseCode = "201", description = "Subscription created successfully."),
+            @ApiResponse(responseCode = "404", description = "Theme not found. The provided ID does not match any theme in the database."),
+            @ApiResponse(responseCode = "403", description = "Forbidden. The user is not authorized to perform this operation."),
+            @ApiResponse(responseCode = "500", description = "Internal Server Error. An unexpected error occurred.")
     })
-
     @PostMapping("/subscribe/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
     public Subscription subscribe(@PathVariable(value = "id") Long idTheme, Principal principal) throws ResourceNotFoundException {
-        User user = userService.findByEmail(principal.getName());
-
+        UserDTO user = userService.findByEmailOrName(principal.getName());
         return topicService.subscribe(user.getId(), idTheme);
     }
 

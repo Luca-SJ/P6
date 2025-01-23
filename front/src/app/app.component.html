@@ -1,1 +1,29 @@
-<router-outlet></router-outlet>
+<router-outlet>
+    <div class="modal" style="display: none;">
+        <div class="modal-blur" style="position: absolute;width: 100vw;height: 100vh;z-index: 998;backdrop-filter: blur(3px) brightness(0.8);">
+            <div class="modal-content bg-stone-100 border rounded shadow-2xl flex flex-col text-center" style="z-index: 999;position: absolute;width: 500px;height: 300px;position: absolute;margin: auto;left: 0;right: 0;top: 0;bottom: 0;padding: 50px 0;">
+                <div class="modal-title text-2xl font-bold ">
+                    <span class="modal-title-text"></span>
+                </div>
+                <div class="modal-message text-lg">
+                    <span class="modal-message-text"></span>
+                </div>
+                <div class="flex m-auto">
+                    <button class="modal-button-ok bg-green-500 rounded font-bold" style="width: 200px;padding: 5px 0;">
+                        OK
+                    </button>
+
+                </div>
+                <div class="flex m-auto">
+                    <span class="modal-redirection">Redirection automatique dans : </span>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $(".modal-button-ok").click(function() {
+            $(".modal").fadeOut();
+        });
+    </script>
+</router-outlet>

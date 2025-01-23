@@ -1,0 +1,100 @@
+<style>
+    body {
+        padding: 20px 40px 0 40px;
+    }
+
+    .createAndFilter {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .articles_list {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
+    }
+
+    .new {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        height: 200px;
+        border-radius: 5px;
+        padding: 20px;
+        background: rgb(245, 245, 245);
+        overflow: hidden;
+    }
+
+    footer {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 50px;
+        border-top: 1px solid lightgray;
+    }
+
+    footer a {
+        font-size: 18px;
+        font-weight: bold;
+        color: rgb(192, 50, 50);
+    }
+
+    footer a:hover {
+        color: rgb(255, 0, 0);
+    }
+
+    @media only screen and (max-width: 600px) {
+        .articles_list {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .subscribe {
+            width: 100%;
+        }
+}
+        
+</style>
+
+<app-header></app-header>
+
+<body>
+
+    <div class="articles_list">
+        <div class="new">
+            <span style="font-weight: bold;font-size: 16px;">{{ data?.title }}</span>
+            <div
+                style="display: flex;justify-content: space-between;">
+                <span class="italic">Date : {{ data?.created_at | date:'dd-MM-yyyy - HH:mm'}}</span>
+                <span class="italic">Auteur : {{ data?.owner_name }}</span>
+            </div>
+            <span style="text-align: justify;overflow: hidden;">{{ data?.description }}</span>
+
+        </div>
+
+        <div class="flex flex-col rounded p-3 gap-3" style="border: 1px solid lightgray;">
+            <span>Commentaires :</span>
+            <form class="flex flex-col" [formGroup]="form" (ngSubmit)="submitComment()">
+                <textarea class="w-full rounded-t p-3 bg-stone-100 min-h-20 outline-none" style="border-top: 1px solid lightgray;border-left: 1px solid lightgray;border-right: 1px solid lightgray;" name="" id="" rows="2" matInput formControlName="message"></textarea>
+                <button mat-raised-button color="primary" class="w-full" style="border-radius: 0 0 0.25rem 0.25rem;" type="submit" [disabled]="form.invalid">Publier le commentaire</button>
+            </form>
+            
+            <div class="flex flex-col rounded p-3 bg-stone-100 min-h-20 outline-none gap-3" style="border: 1px solid lightgray;" name="" id="" rows="2" *ngFor="let comment of comments">
+                <div class="flex flex-row justify-between">
+                    <span class="font-bold underline text-base">
+                        {{ comment.user_name }}
+                    </span>
+                    <span>
+                        {{ comment.createdAt | date:'dd-MM-yyyy - HH:mm' }}
+                    </span>
+                </div>
+                <div class="flex flex-row justify-between">
+                    <p class="text-justify">
+                        {{ comment.message }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>

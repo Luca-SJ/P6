@@ -1,5 +1,6 @@
 package com.openclassrooms.mddapi.Services.Interfaces;
 
+import com.openclassrooms.mddapi.Dtos.TopicDTO;
 import com.openclassrooms.mddapi.Exceptions.ResourceNotFoundException;
 import com.openclassrooms.mddapi.Models.Subscription;
 import com.openclassrooms.mddapi.Models.Topic;
@@ -8,7 +9,7 @@ import java.util.List;
  public interface ITopicService {
 
      //
-     List<Topic> findAll();
+     List<TopicDTO> findAll();
 
      /**
       *
@@ -16,15 +17,15 @@ import java.util.List;
       * @return {@link Topic}
       * @throws ResourceNotFoundException If the topic is not found, ResourceNotFoundException
       */
-     Topic findByID(Long topicID) throws ResourceNotFoundException;
+     TopicDTO findByID(Long topicID) throws ResourceNotFoundException;
 
-     Topic findByName(String name) throws ResourceNotFoundException;
+     TopicDTO findByName(String name) throws ResourceNotFoundException;
 
      void unsubscribeByTopicId(Long topicID) throws ResourceNotFoundException;
 
-     Topic updateThemeByID(Long topicID, Topic topicDetails) throws ResourceNotFoundException;
+     TopicDTO updateThemeByID(Long topicID, Topic topicDetails) throws ResourceNotFoundException;
 
-     Topic createTheme(Topic topicID);
+     void createTheme(TopicDTO topicID);
 
      Subscription subscribe(long userId, long topicID);
 
@@ -35,5 +36,5 @@ import java.util.List;
       * @param id User identifier
       * @return {@link Topic} List
       */
-     List<Topic> getTopicsByUserId(Long id);
+     List<TopicDTO> getTopicsByUserId(Long id);
  }

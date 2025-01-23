@@ -6,11 +6,12 @@ import { LoginComponent } from './features/auth/components/login/login.component
 import { AuthGuard } from './guards/auth.guard';
 import { UnauthGuard } from './guards/unauth.guard';
 import { MeComponent } from './components/me/me.component';
-import { NewsComponent } from './news/news.component';
-import { ThemesComponent } from './themes/components/themes.component';
+import { ArticlesComponent } from './articles/articles.component';
+import { TopicComponent } from './topic/components/topics.component';
 import { HeaderComponent } from './header/header.component';
-import { CreateNewsComponent } from './create-news/create-news.component';
-import { NewsDetailsComponent } from './news-details/news-details.component';
+import { ArticlesDetailsComponent } from './articles-details/articles-details.component';
+import { UserResolver } from './resolver/user.resolver';
+import { CreateArticlesComponent } from './create-articles/create-articles.component';
 
 // consider a guard combined with canLoad / canActivate route option
 // to manage unauthenticated user to access private routes
@@ -28,7 +29,7 @@ const routes: Routes = [
 
   { 
     path: 'register',
-    canActivate: [UnauthGuard],
+    canActivate: [AuthGuard],
     component: RegisterComponent
   },
 
@@ -40,27 +41,35 @@ const routes: Routes = [
 
   { 
     path: 'me',
+    canActivate: [AuthGuard],
+    resolve: { user: UserResolver },
     component: MeComponent
   },
 
   { 
-    path: 'news',
-    component: NewsComponent
+    path: 'articles',
+    canActivate: [AuthGuard],
+    component: ArticlesComponent
   },
 
   { 
-    path: 'news/:id',
-    component: NewsDetailsComponent
+    path: 'articles/:id',
+    canActivate: [AuthGuard],
+    resolve: { user: UserResolver },
+    component: ArticlesDetailsComponent
   },
 
   { 
-    path: 'themes',
-    component: ThemesComponent
+    path: 'topics',
+    canActivate: [AuthGuard],
+    component: TopicComponent
   },
 
   { 
-    path: 'create-news',
-    component: CreateNewsComponent
+    path: 'create-articles',
+    canActivate: [AuthGuard],
+    resolve: { user: UserResolver },
+    component: CreateArticlesComponent
   },
   
 ];

@@ -1,13 +1,13 @@
 {
     "/api/*": {
-        "target": "http://localhost:3001",
+        "target": "http://localhost:8083",
         "secure": false,
         "changeOrigin": true,
         "logLevel": "debug"
     },
 
     "/images": {
-        "target": "http://localhost:3001",
+        "target": "http://localhost:8083",
         "secure": false,
         "changeOrigin": true,
         "logLevel": "debug"

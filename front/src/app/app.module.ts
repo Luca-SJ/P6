@@ -17,17 +17,23 @@ import { RegisterComponent } from './features/auth/components/register/register.
 import { LoginComponent } from './features/auth/components/login/login.component';
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NewsComponent } from './news/news.component';
-import { ThemesComponent } from './themes/components/themes.component';
+import { TopicComponent } from './topic/components/topics.component';
 import { HeaderComponent } from './header/header.component';
-import { CreateNewsComponent } from './create-news/create-news.component';
-import { NewsDetailsComponent } from './news-details/news-details.component';
+import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { ArticlesDetailsComponent } from './articles-details/articles-details.component';
+import { ArticlesComponent } from './articles/articles.component';
+import { CreateArticlesComponent } from './create-articles/create-articles.component';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 
 const materialModule = [
   MatButtonModule,
   MatCardModule,
   MatIconModule,
   MatToolbarModule,
+  MatFormFieldModule,
+  MatInputModule,
+  MatSelectModule,
 ]
 
 @NgModule({
@@ -38,11 +44,11 @@ const materialModule = [
     RegisterComponent,
     LoginComponent,
     HomeComponent,
-    NewsComponent,
-    ThemesComponent,
+    ArticlesComponent,
+    TopicComponent,
     HeaderComponent,
-    CreateNewsComponent,
-    NewsDetailsComponent,
+    CreateArticlesComponent,
+    ArticlesDetailsComponent,
   ],
   imports: [
     BrowserModule,
@@ -52,7 +58,7 @@ const materialModule = [
     BrowserAnimationsModule, 
     FlexLayoutModule,
     HttpClientModule,
-    ...materialModule
+    ...materialModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },

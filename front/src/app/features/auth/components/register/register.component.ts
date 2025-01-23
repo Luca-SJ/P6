@@ -6,6 +6,7 @@ import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../interfaces/registerRequest.interface';
 import { AuthSuccess } from '../../interfaces/authSuccess.interface';
 import { User } from 'src/app/interfaces/user.interface';
+import { catchError, EMPTY, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-register',
@@ -29,15 +30,34 @@ export class RegisterComponent {
 
   public submit(): void {
     const registerRequest = this.form.value as RegisterRequest;
-    this.authService.register(registerRequest).subscribe(
-      (response: AuthSuccess) => {
-        this.authService.me().subscribe((user: User) => {
-          this.sessionService.logIn(user, response.token);
-          this.router.navigate(['/'])
-        });
-      },
-      error => this.onError = true
-    );
+    this.authService.register(registerRequest).pipe(tap((response: AuthSuccess) =>{ 
+            this.sessionService.token = response.token;
+            this.router.navigate(['/articles']);
+            }),
+        switchMap((response: AuthSuccess) => 
+            this.authService.me().pipe(
+              tap((user: User) =>{  
+                this.sessionService.user = user; 
+                this.sessionService.logIn(user, response.token)
+              })
+            )
+          ),
+          catchError(() => {
+            this.onError = true;
+            return EMPTY;
+          })
+        ).subscribe();
+
+
+    // this.authService.register(registerRequest).subscribe(
+    //   (response: AuthSuccess) => {
+    //     this.authService.me().subscribe((user: User) => {
+    //       this.sessionService.logIn(user, response.token);
+    //       this.router.navigate(['/articles'])
+    //     });
+    //   },
+    //   error => this.onError = true
+    // );
   }
 
 }
