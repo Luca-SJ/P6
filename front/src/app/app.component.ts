@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { catchError, EMPTY, Observable, switchMap, tap } from 'rxjs';
 import { AuthService } from './features/auth/services/auth.service';
 import { User } from './interfaces/user.interface';
 import { SessionService } from './services/session.service';
-import { AuthSuccess } from './features/auth/interfaces/authSuccess.interface';
+import * as $ from "jquery";
 
 @Component({
   selector: 'app-root',
@@ -13,7 +12,8 @@ import { AuthSuccess } from './features/auth/interfaces/authSuccess.interface';
 })
 export class AppComponent implements OnInit {
   public onError = false;
-  
+  public show = true;
+
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -22,6 +22,15 @@ export class AppComponent implements OnInit {
 
   public ngOnInit(): void {
     this.autoLog();
+
+    $(".modal-button-ok").click(function() {
+      $(".modal").fadeOut();
+    });
+
+  }
+
+  public checkConnection(): boolean {
+    return localStorage.getItem('token') ? true : false;
   }
 
   public autoLog(): void {
@@ -33,23 +42,4 @@ export class AppComponent implements OnInit {
     }
   }
 
-//   public autoLog(): void {
-//     this.authService.me().pipe(tap((response: AuthSuccess) =>{ 
-//               this.sessionService.token = response.token;
-//               this.router.navigate(['/news']);
-//               }),
-//           switchMap((response: AuthSuccess) => 
-//               this.authService.me().pipe(
-//                 tap((user: User) =>{  
-//                   this.sessionService.user = user; 
-//                   this.sessionService.logIn(user, response.token)
-//                 })
-//               )
-//             ),
-//             catchError(() => {
-//               this.onError = true;
-//               return EMPTY;
-//             })
-//           ).subscribe();
-//   }
 }

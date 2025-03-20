@@ -1,29 +1,76 @@
-<router-outlet>
-    <div class="modal" style="display: none;">
-        <div class="modal-blur" style="position: absolute;width: 100vw;height: 100vh;z-index: 998;backdrop-filter: blur(3px) brightness(0.8);">
-            <div class="modal-content bg-stone-100 border rounded shadow-2xl flex flex-col text-center" style="z-index: 999;position: absolute;width: 500px;height: 300px;position: absolute;margin: auto;left: 0;right: 0;top: 0;bottom: 0;padding: 50px 0;">
-                <div class="modal-title text-2xl font-bold ">
-                    <span class="modal-title-text"></span>
-                </div>
-                <div class="modal-message text-lg">
-                    <span class="modal-message-text"></span>
-                </div>
-                <div class="flex m-auto">
-                    <button class="modal-button-ok bg-green-500 rounded font-bold" style="width: 200px;padding: 5px 0;">
-                        OK
-                    </button>
+<mat-toolbar [fxHide.lt-md]="!checkConnection()">
+    <mat-toolbar-row>
+        <div class="flex w-full justify-between items-center">
+            <!-- <span>Responsive Navigation</span> -->
+            <a href="">
+                <img src="/assets/logo_p6.png" alt="logo" class="logo" />
+            </a>
 
-                </div>
-                <div class="flex m-auto">
-                    <span class="modal-redirection">Redirection automatique dans : </span>
+            <button mat-icon-button (click)="sidenav.toggle()" [fxShow]="checkConnection()" fxHide.gt-sm>
+                <mat-icon>menu</mat-icon>
+            </button>
+            
+        </div>
 
+        <span class="menu-spacer"></span>
+        <div id="navButtons" [fxShow]="checkConnection()" fxHide.lt-md>
+            <a href="articles" mat-button>Articles</a>
+            <a href="topics" mat-button>Thèmes</a>
+            <a href="me" mat-button>Me</a>
+        </div>
+    </mat-toolbar-row>
+</mat-toolbar>
+
+<mat-sidenav-container fxFlexFill>
+    <mat-sidenav #sidenav position="end" style="height: calc(100vh - 56px) !important;">
+        <mat-nav-list class="flex h-full" style="padding-top: 0 !important;">
+            <div class="flex flex-col justify-between align-middle items-end h-full">
+                <div class="flex-grow">
+                    <a href="articles" mat-list-item>Articles</a>
+                    <a href="topics" mat-list-item>Thèmes</a>
+                    
+                </div>
+                <div>
+                    <a href="me" mat-list-item><img src="/assets/avatar.png" alt="me" class="h-12" /></a>
+                    
+                </div>
+                
+            </div>
+            
+        </mat-nav-list>
+    </mat-sidenav>
+<mat-sidenav-content fxFlexFill style="height: 20px;">
+
+        <router-outlet>
+            <div class="modal" style="display: none;">
+                <div class="modal-blur"
+                    style="position: absolute;width: 100vw;height: 100vh;z-index: 998;backdrop-filter: blur(3px) brightness(0.8);">
+                    <div
+                        class="modal-content bg-stone-100 border rounded shadow-2xl flex flex-col text-center"
+                        style="z-index: 999;position: absolute;width: 500px;height: 300px;position: absolute;margin: auto;left: 0;right: 0;top: 0;bottom: 0;padding: 50px 0;">
+                        <div class="modal-title text-2xl font-bold ">
+                            <span class="modal-title-text"></span>
+                        </div>
+                        <div class="modal-message text-lg">
+                            <span class="modal-message-text"></span>
+                        </div>
+                        <div class="flex m-auto">
+                            <button
+                                class="modal-button-ok bg-green-500 rounded font-bold"
+                                style="width: 200px;padding: 5px 0;">
+                                OK
+                            </button>
+
+                        </div>
+                        <div class="flex m-auto">
+                            <span class="modal-redirection">Redirection
+                                automatique dans : </span>
+
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <script>
-        $(".modal-button-ok").click(function() {
-            $(".modal").fadeOut();
-        });
-    </script>
-</router-outlet>
+
+        </router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>

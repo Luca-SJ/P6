@@ -1,39 +1,21 @@
-<style>
-    input {
-        border: 1px solid lightgray;
-        border-radius: 3px;
-        padding: 4px 8px;
-        outline: none;
-        width: 50%;
-    }
-
-    mat-card-content {
-        gap: 10px;
-    }
-
-    button.validate {
-        width: 50%;
-    }
-
-</style>
-
 <div class="login" fxLayout="column" fxLayoutAlign="center center">
-    <div style="width: 100%;max-width: 600px;">
-        <a href="">Retour</a>
-    </div>
-
+    <!-- <div style="width: 100%;max-width: 600px;">
+        <a href="" class="pl-3 sm:pl-0">Retour</a>
+    </div> -->
     <mat-card>
+        <div class="flex justify-center items-center sm:hidden">
+            <img src="/assets/logo_p6.png" alt="logo" class="w-60"/>
+        </div>
         <mat-card-header fxLayoutAlign="center center">
             <mat-card-title>Se connecter</mat-card-title>
         </mat-card-header>
         <form class="login-form" [formGroup]="form" (ngSubmit)="submit()">
             <mat-card-content fxLayout="column">
                 <mat-form-field fxFlex>
-                    <input matInput placeholder="Email or name" formControlName="nameOrEmail">
+                    <input matInput placeholder="Email ou pseudo" formControlName="nameOrEmail">
                 </mat-form-field>
                 <mat-form-field fxFlex>
-                    <input matInput [type]="hide ? 'password' : 'text'" placeholder="Password"
-                        formControlName="password">
+                    <input matInput [type]="hide ? 'password' : 'text'" placeholder="Mot de passe" formControlName="password">
                     <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
                         [attr.aria-pressed]="hide">
                         <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>

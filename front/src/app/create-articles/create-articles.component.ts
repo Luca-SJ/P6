@@ -45,6 +45,7 @@ export class CreateArticlesComponent {
       },
       error:(error)=> console.error('Erreur lors de la récupération des données', error)
     });
+
   }
 
   public submit(): void {

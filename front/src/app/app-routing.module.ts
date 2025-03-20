@@ -8,7 +8,6 @@ import { UnauthGuard } from './guards/unauth.guard';
 import { MeComponent } from './components/me/me.component';
 import { ArticlesComponent } from './articles/articles.component';
 import { TopicComponent } from './topic/components/topics.component';
-import { HeaderComponent } from './header/header.component';
 import { ArticlesDetailsComponent } from './articles-details/articles-details.component';
 import { UserResolver } from './resolver/user.resolver';
 import { CreateArticlesComponent } from './create-articles/create-articles.component';

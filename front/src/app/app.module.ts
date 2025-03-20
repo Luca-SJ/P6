@@ -18,13 +18,15 @@ import { LoginComponent } from './features/auth/components/login/login.component
 import { HomeComponent } from './components/home/home.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TopicComponent } from './topic/components/topics.component';
-import { HeaderComponent } from './header/header.component';
-import { MatFormField, MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { ArticlesDetailsComponent } from './articles-details/articles-details.component';
 import { ArticlesComponent } from './articles/articles.component';
 import { CreateArticlesComponent } from './create-articles/create-articles.component';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSidenavModule } from "@angular/material/sidenav";
+import { MatListModule } from "@angular/material/list";
+import { FooterComponent } from './footer/footer.component';
 
 const materialModule = [
   MatButtonModule,
@@ -34,6 +36,8 @@ const materialModule = [
   MatFormFieldModule,
   MatInputModule,
   MatSelectModule,
+  MatSidenavModule,
+  MatListModule
 ]
 
 @NgModule({
@@ -46,9 +50,9 @@ const materialModule = [
     HomeComponent,
     ArticlesComponent,
     TopicComponent,
-    HeaderComponent,
     CreateArticlesComponent,
     ArticlesDetailsComponent,
+    FooterComponent,
   ],
   imports: [
     BrowserModule,
